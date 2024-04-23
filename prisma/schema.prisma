@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+
+model Cliente {
+  id              Int     @id @default(autoincrement())
+  nome            String?
+  nomeFantasia    String?
+  razaoSocial     String?
+  cnpj_cpf        String?
+  ie              String?
+  telefone        String?
+  endereco        String?
+  complemento     String?
+  cep             String?
+  bairro          String?
+  cidade          String?
+  estado          String?
+  diaEntrega      String?
+  horarioEntrega  String?
+  pedidos         Pedido[]
+  produtos        Produto[]
+  hash            String?
+}
+
+model Produto {
+  id             Int      @id @default(autoincrement())
+  cliente        Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId      Int?
+  nome           String
+  embalagem      String?
+  porcao         String?
+  infoNutri      String?
+  ingredientes   String?
+  validade       String?
+  peso           String?
+  unidade        String?
+  precoPorPeso   Int?
+  ppp            Int?
+  precoTotal     Int?
+  items          Item[]
+  hash           String?
+}
+
+model Pedido {
+  id                    Int       @id @default(autoincrement())
+  cliente               Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId             Int?
+  dataAguardandoEntrega DateTime?
+  dataEntrega           DateTime?
+  dataPPagamento        DateTime?
+  dataPedido            DateTime?
+  dataProduzir          DateTime?
+  dataFinalizado        DateTime?
+  dataEntregue          DateTime?
+  dataPagamento         DateTime?
+  lote                  String?
+  ocultarLote           Boolean   @default(false)
+  numero                String?
+  ordem                 String?
+  pesoTotal             Int?
+  acrescimoTotal        Int?
+  descontoTotal         Int?
+  precoTotal            Int?
+  qtdProdutos           Int?
+  qtdTotal              Int?
+  estado                String?
+  pgtStatus             String?
+  pgtTipo               String?
+  obs                   String?
+  items                 Item[]
+  hash                  String?
+}
+
+model Item {
+  id              Int       @id @default(autoincrement())
+  pedido          Pedido    @relation(fields: [pedidoId], references: [id])
+  pedidoId        Int
+  produto         Produto?   @relation(fields: [produtoId], references: [id])
+  produtoId       Int?
+  desconto        Int?
+  acrescimo       Int?
+  peso            Int?
+  qtd             Int?
+  preco           Int?
+  ppp             Int?
+  total           Int?
+}
